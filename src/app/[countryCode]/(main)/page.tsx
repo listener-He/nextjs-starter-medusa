@@ -7,7 +7,7 @@ import { getCollectionByHandle, listCollections } from "@lib/data/collections"
 import { getRegion } from "@lib/data/regions"
 
 export const metadata: Metadata = {
-  title: "STORE",
+  title: "Fridgera STORE",
   description:
     "Discover amazing products at our online store.",
 }

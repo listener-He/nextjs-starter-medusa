@@ -19,7 +19,7 @@ export default async function Nav() {
               className="txt-compact-xlarge-plus hover:text-ui-fg-base"
               data-testid="nav-brand-link"
             >
-              fridgera
+              Fridgera
             </LocalizedClientLink>
           </div>
 

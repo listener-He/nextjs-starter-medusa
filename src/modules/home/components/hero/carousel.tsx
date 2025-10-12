@@ -40,7 +40,11 @@ export default function HeroCarousel({ items }: { items: Item[] }) {
           </Text>
         </span>
         <LocalizedClientLink href={ctaHref}>
-          <Button className="mt-4">Shop Now</Button>
+          <Button
+            className="mt-4 rounded-full bg-white/60 hover:bg-white/70 text-ui-fg-base border border-white/50 backdrop-blur-sm shadow-sm transition-colors px-6 py-2"
+          >
+            Shop Now
+          </Button>
         </LocalizedClientLink>
         {validItems.length > 1 && (
           <div className="absolute bottom-6 flex items-center gap-3">
