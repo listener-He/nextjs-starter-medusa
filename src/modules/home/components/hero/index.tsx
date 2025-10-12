@@ -1,26 +1,27 @@
-import { Heading } from "@medusajs/ui"
+import { HttpTypes } from "@medusajs/types"
+import { listProducts } from "@lib/data/products"
+import HeroCarousel from "./carousel"
 
-const Hero = () => {
-  return (
-    <div className="h-[75vh] w-full border-b border-ui-border-base relative bg-ui-bg-subtle">
-      <div className="absolute inset-0 z-10 flex flex-col justify-center items-center text-center small:p-32 gap-6">
-        <span>
-          <Heading
-            level="h1"
-            className="text-3xl leading-10 text-ui-fg-base font-normal"
-          >
-            Welcome to Our Store
-          </Heading>
-          <Heading
-            level="h2"
-            className="text-3xl leading-10 text-ui-fg-subtle font-normal"
-          >
-            Discover Amazing Products
-          </Heading>
-        </span>
-      </div>
-    </div>
-  )
+const Hero = async ({
+  collection,
+  region,
+}: {
+  collection: HttpTypes.StoreCollection
+  region: HttpTypes.StoreRegion
+}) => {
+  const {
+    response: { products },
+  } = await listProducts({
+    regionId: region.id,
+    queryParams: { collection_id: collection.id, limit: 10 },
+  })
+
+  const items = (products || []).map((p) => ({
+    image: p.thumbnail || p.images?.[0]?.url,
+    handle: p.handle,
+  }))
+
+  return <HeroCarousel items={items} />
 }
 
 export default Hero

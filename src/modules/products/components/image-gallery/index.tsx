@@ -7,6 +7,13 @@ type ImageGalleryProps = {
 }
 
 const ImageGallery = ({ images }: ImageGalleryProps) => {
+  const cleanUrl = (url?: string | null) => {
+    if (!url) return url as any
+    const trimmed = url.trim()
+    // Remove a trailing ')' if present (e.g., "...webp)")
+    return trimmed.endsWith(")") ? trimmed.slice(0, -1) : trimmed
+  }
+
   return (
     <div className="flex items-start relative">
       <div className="flex flex-col flex-1 small:mx-16 gap-y-4">
@@ -19,7 +26,7 @@ const ImageGallery = ({ images }: ImageGalleryProps) => {
             >
               {!!image.url && (
                 <Image
-                  src={image.url}
+                  src={cleanUrl(image.url) as string}
                   priority={index <= 2 ? true : false}
                   className="absolute inset-0 rounded-rounded"
                   alt={`Product image ${index + 1}`}

@@ -1,8 +1,9 @@
 import { Metadata } from "next"
 
-import FeaturedProducts from "@modules/home/components/featured-products"
+import FeaturedCollections from "@modules/home/components/featured-collections"
 import Hero from "@modules/home/components/hero"
-import { listCollections } from "@lib/data/collections"
+import NewArrivals from "@modules/home/components/new-arrivals"
+import { getCollectionByHandle, listCollections } from "@lib/data/collections"
 import { getRegion } from "@lib/data/regions"
 
 export const metadata: Metadata = {
@@ -20,22 +21,25 @@ export default async function Home(props: {
 
   const region = await getRegion(countryCode)
 
-  const { collections } = await listCollections({
-    fields: "id, handle, title",
-  })
-
-  if (!collections || !region) {
+  if (!region) {
     return null
   }
 
+  // Fetch specific collections by handle for homepage sections
+  const bannerCollection = await getCollectionByHandle("home_banner").catch(
+    () => null
+  )
+
+  const waistbandCollections = await listCollections({
+    handle: "home_waistband",
+    fields: "id, handle, title",
+  }).then(({ collections }) => collections.slice(0, 2))
+
   return (
     <>
-      <Hero />
-      <div className="py-12">
-        <ul className="flex flex-col gap-x-6">
-          <FeaturedProducts collections={collections} region={region} />
-        </ul>
-      </div>
+      {bannerCollection && <Hero collection={bannerCollection} region={region} />}
+      <FeaturedCollections collections={waistbandCollections} region={region} />
+      <NewArrivals region={region} countryCode={countryCode} />
     </>
   )
 }

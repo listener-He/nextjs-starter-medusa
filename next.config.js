@@ -6,6 +6,7 @@ checkEnvVariables()
  * @type {import('next').NextConfig}
  */
 const nextConfig = {
+  output: 'standalone',
   reactStrictMode: true,
   logging: {
     fetches: {
@@ -35,6 +36,10 @@ const nextConfig = {
       {
         protocol: "https",
         hostname: "medusa-server-testing.s3.us-east-1.amazonaws.com",
+      },
+      {
+        protocol: "https",
+        hostname: "dashboard.fridgera.com",
       },
     ],
   },
