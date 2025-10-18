@@ -25,22 +25,23 @@ export default async function FeaturedCollections({
         response: { products },
       } = await listProducts({
         regionId: region.id,
-        queryParams: { collection_id: [collection.id], limit: 1 },
+        queryParams: { collection_id: [collection.id], limit: 2 },
       })
 
-      const product = products?.[0]
-      const image = cleanUrl(product?.thumbnail || product?.images?.[0]?.url)
-
-      return { collection, product, image }
+      return products.map((product) => ({
+        collection,
+        product,
+        image: cleanUrl(product?.thumbnail || product?.images?.[0]?.url),
+      }))
     })
-  )
+  ).then((nested) => nested.flat())
 
   return (
     <div className="content-container py-12">
       <Text className="txt-xlarge mb-6 text-center">Featured Collections</Text>
       <ul className="grid grid-cols-1 small:grid-cols-2 gap-6">
         {items.map(({ collection, product }) => (
-          <li key={collection.id} className="border rounded-lg overflow-hidden bg-white">
+          <li key={`${collection.id}-${product.id}`} className="border rounded-lg overflow-hidden bg-white">
             <LocalizedClientLink href={product?.handle ? `/products/${product.handle}` : `/collections/${collection.handle}`}>
               <div className="h-[320px] w-full">
                 {product ? (
