@@ -8,8 +8,9 @@ import { SortOptions } from "@modules/store/components/refinement-list/sort-prod
 import PaginatedProducts from "@modules/store/templates/paginated-products"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import { HttpTypes } from "@medusajs/types"
+import { listCategories } from "@lib/data/categories"
 
-export default function CategoryTemplate({
+export default async function CategoryTemplate({
   category,
   sortBy,
   page,
@@ -36,12 +37,26 @@ export default function CategoryTemplate({
 
   getParents(category)
 
+  const categories = await listCategories().catch(() => [])
+
+  const collectCategoryIds = (cat: HttpTypes.StoreProductCategory): string[] => {
+    const ids: string[] = [cat.id]
+    if (cat.category_children && cat.category_children.length) {
+      for (const child of cat.category_children) {
+        ids.push(...collectCategoryIds(child))
+      }
+    }
+    return ids
+  }
+
+  const allCategoryIds = collectCategoryIds(category)
+
   return (
     <div
       className="flex flex-col small:flex-row small:items-start py-6 content-container"
       data-testid="category-container"
     >
-      <RefinementList sortBy={sort} data-testid="sort-by-container" />
+      <RefinementList categories={categories} data-testid="sort-by-container" />
       <div className="w-full">
         <div className="flex flex-row mb-8 text-2xl-semi gap-4">
           {parents &&
@@ -87,7 +102,7 @@ export default function CategoryTemplate({
           <PaginatedProducts
             sortBy={sort}
             page={pageNumber}
-            categoryId={category.id}
+            categoryIds={allCategoryIds}
             countryCode={countryCode}
           />
         </Suspense>

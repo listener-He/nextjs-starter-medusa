@@ -53,6 +53,8 @@ export const listProducts = async ({
     ...(await getCacheOptions("products")),
   }
 
+  const salesChannelId = process.env.NEXT_PUBLIC_MEDUSA_SALES_CHANNEL_ID
+
   return sdk.client
     .fetch<{ products: HttpTypes.StoreProduct[]; count: number }>(
       `/store/products`,
@@ -62,6 +64,7 @@ export const listProducts = async ({
           limit,
           offset,
           region_id: region?.id,
+          ...(salesChannelId ? { sales_channel_id: salesChannelId } : {}),
           fields:
             "*variants.calculated_price,+variants.inventory_quantity,+metadata,+tags",
           ...queryParams,
@@ -89,22 +92,25 @@ export const listProducts = async ({
  * This will fetch 100 products to the Next.js cache and sort them based on the sortBy parameter.
  * It will then return the paginated products based on the page and limit parameters.
  */
-export const listProductsWithSort = async ({
-  page = 0,
+export async function listProductsWithSort({
+  page,
   queryParams,
-  sortBy = "created_at",
+  sortBy,
   countryCode,
 }: {
-  page?: number
-  queryParams?: HttpTypes.FindParams & HttpTypes.StoreProductParams
+  page: number
+  queryParams: {
+    limit?: number
+    id?: string[]
+    category_id?: string[]
+    collection_id?: string[]
+    order?: string
+  }
   sortBy?: SortOptions
   countryCode: string
-}): Promise<{
-  response: { products: HttpTypes.StoreProduct[]; count: number }
-  nextPage: number | null
-  queryParams?: HttpTypes.FindParams & HttpTypes.StoreProductParams
-}> => {
-  const limit = queryParams?.limit || 12
+}) {
+  const limit = queryParams.limit || 12
+  const pageParam = (page - 1) * limit
 
   const {
     response: { products, count },
@@ -117,9 +123,8 @@ export const listProductsWithSort = async ({
     countryCode,
   })
 
-  const sortedProducts = sortProducts(products, sortBy)
-
-  const pageParam = (page - 1) * limit
+  const sortKey: SortOptions = sortBy ?? "created_at"
+  const sortedProducts = sortProducts(products, sortKey)
 
   const nextPage = count > pageParam + limit ? pageParam + limit : null
 

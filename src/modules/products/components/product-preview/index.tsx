@@ -37,8 +37,12 @@ export default async function ProductPreview({
           size="full"
           isFeatured={isFeatured}
         />
-        <div className="flex txt-compact-medium mt-4 justify-between">
-          <Text className="text-ui-fg-subtle" data-testid="product-title">
+        <div className="flex txt-compact-small xsmall:txt-compact-medium mt-4 justify-between">
+          <Text
+            className="text-ui-fg-subtle overflow-hidden break-words 2xsmall:text-[13px] 2xsmall:leading-[18px] xsmall:text-base-regular"
+            data-testid="product-title"
+            style={{ display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}
+          >
             {product.title}
           </Text>
           <div className="flex items-center gap-x-2">

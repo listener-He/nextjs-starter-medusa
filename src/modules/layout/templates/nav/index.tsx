@@ -4,16 +4,20 @@ import { listRegions } from "@lib/data/regions"
 import { StoreRegion } from "@medusajs/types"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import CartButton from "@modules/layout/components/cart-button"
+import SideMenu from "@modules/layout/components/side-menu"
 
 export default async function Nav() {
-  await listRegions().then((regions: StoreRegion[]) => regions) // reserved for future use
+  const regions: StoreRegion[] = await listRegions().catch(() => [])
 
   return (
     <div className="sticky top-0 inset-x-0 z-50 group">
       <header className="relative h-16 mx-auto border-b duration-200 bg-white border-ui-border-base">
         <nav className="content-container txt-xsmall-plus text-ui-fg-subtle flex items-center justify-between w-full h-full text-small-regular">
-          {/* Left: Brand */}
-          <div className="flex items-center h-full">
+          {/* Left: Brand + Mobile Menu */}
+          <div className="flex items-center h-full gap-x-3">
+            <div className="flex items-center h-full small:hidden">
+              <SideMenu regions={regions} />
+            </div>
             <LocalizedClientLink
               href="/"
               className="txt-compact-xlarge-plus hover:text-ui-fg-base"
@@ -23,7 +27,7 @@ export default async function Nav() {
             </LocalizedClientLink>
           </div>
 
-          {/* Center: Top menu */}
+          {/* Center: Top menu (desktop only) */}
           <div className="hidden small:flex items-center gap-x-8 h-full">
             <LocalizedClientLink href="/" className="hover:text-ui-fg-base" data-testid="nav-home-link">
               Home
